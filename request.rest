@@ -21,3 +21,29 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3000/logout
+
+###
+POST http://localhost:3000/data
+Content-Type: application/json
+
+{
+    "kode_tiang": "T001",
+    "jenis_lampu": "front light",
+    "gambar" : "daksjadn.jpg",
+    "lat" : "123.123",
+    "long" : "123.123",
+    "jumlah_kendaraan" : "1",
+    "provinsi" : "Jawa Timur",
+    "kota" : "Surabaya",
+    "kabupaten" : "Surabaya",
+    "nama_jalan" : "Jalan Raya",
+    "ukuran": "10x10",
+    "sisi" : "2",
+    "jenis" : "billboard",
+    "nama_pemilik" : "PT. ABC",
+    "status_sewa" : "available",
+    "nama_penyewa" : "PT. XYZ",
+    "lama_sewa" : "1",
+    "satuan_sewa" : "bulan",
+    "harga" : "1000000"
+}

@@ -1,6 +1,7 @@
 import express from 'express';
 import db from './config/database.js';
 import User from './models/userModel.js';
+import data from './models/dataModel.js';
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -24,7 +25,7 @@ app.use(router);
 try {
   await db.authenticate();
   console.log('✅ Database Connected Successfully');
-  await User.sync();
+  await db.sync();
 } catch (error) {
   console.error('❌ Database Connection Failed:', error);
 }

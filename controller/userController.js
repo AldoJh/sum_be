@@ -16,10 +16,6 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        // 1. Cek apakah cookie "user" sudah ada
-        if (req.cookies.user) {
-            return res.status(200).json({ message: "Already logged in", user: req.cookies.user });
-        }
 
         // 2. Ambil email dan password dari request body
         const { email, password } = req.body;

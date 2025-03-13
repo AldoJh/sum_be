@@ -1,5 +1,6 @@
 import express from "express";
 import {createUser, loginUser, logoutUser} from "../controller/userController.js";
+import {createData} from "../controller/dataController.js";
 
 const router = express.Router();
 
@@ -10,5 +11,6 @@ router.get("/", (req, res) => {
 router.post("/register", createUser);
 router.post("/login", loginUser);
 router.delete("/logout", logoutUser);
+router.post("/data", createData);
 
 export default router;
