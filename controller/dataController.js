@@ -11,3 +11,20 @@ export const createData = async (req, res) => {
         res.json({ error: error.message });
     }
 }
+
+// Fungsi untuk mengambil data berdasarkan kategori
+export const getDataByCategory = async (req, res) => {
+    const { category } = req.params; 
+
+    try {
+        const datas = await data.findAll({ where: { jenis: category } });
+
+        if (datas.length === 0) {
+            return res.status(404).json({ message: `No data found for category: ${category}` });
+        }
+
+        res.json(datas);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
