@@ -5,6 +5,8 @@ import data from './models/dataModel.js';
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
 
