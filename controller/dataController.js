@@ -63,7 +63,7 @@ export const editData = async (req, res) => {
 
     try {
         const datas = await data.update({ kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa, nama_penyewa, lama_sewa, satuan_sewa,harga }, { where: { id } });
-        res.json("data updated");
+        res.json("data updated dengan jumlah" + datas + "data");
     } catch (error) {
         res.json({ error: error.message });
     }
