@@ -9,6 +9,7 @@ import multer from 'multer';
 import path from 'path';
 
 const app = express();
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // 🔹 Gunakan origin yang spesifik
 app.use(cors({
@@ -17,7 +18,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cookieParser());
 app.use(express.json());
 
