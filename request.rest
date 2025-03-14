@@ -82,3 +82,6 @@ Content-Type: application/json
         "satuan_sewa": "bulan",
         "harga": "1800000"
     }
+
+###
+POST http://localhost:3000/data/search/diy
