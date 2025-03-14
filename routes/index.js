@@ -1,6 +1,6 @@
 import express from "express";
 import {createUser, loginUser, logoutUser} from "../controller/userController.js";
-import {createData, getDataByCategory} from "../controller/dataController.js";
+import {createData, getDataByCategory, getAllData, getDataById, editData} from "../controller/dataController.js";
 
 const router = express.Router();
 
@@ -13,5 +13,8 @@ router.post("/login", loginUser);
 router.delete("/logout", logoutUser);
 router.post("/data", createData);
 router.get('/data/:category', getDataByCategory);
+router.get('/data', getAllData);
+router.get('/data/id/:id', getDataById);
+router.put('/data/id/:id', editData);
 
 export default router;

@@ -51,3 +51,34 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/data/billboard
 
+###
+GET http://localhost:3000/data
+
+###
+GET http://localhost:3000/data/id/1
+
+###
+PUT http://localhost:3000/data/id/1
+Content-Type: application/json
+
+{
+        "kode_tiang": "T001",
+        "jenis_lampu": "back light",
+        "gambar": "billboard3.jpg",
+        "lat": "-6.917464", 
+        "long": "107.619123",
+        "jumlah_kendaraan": "4",
+        "provinsi": "Jawa Barat",
+        "kota": "Bandung",
+        "kabupaten": "Bandung",
+        "nama_jalan": "Jalan Pasteur",
+        "ukuran": "10x6",
+        "sisi": "1",
+        "jenis": "billboard",
+        "nama_pemilik": "PT. UVW",
+        "status_sewa": "rented",
+        "nama_penyewa": "PT. XYZ",
+        "lama_sewa": "12",
+        "satuan_sewa": "bulan",
+        "harga": "1800000"
+    }
