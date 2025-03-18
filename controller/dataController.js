@@ -61,11 +61,7 @@ export const createData = async (req, res) => {
                 sisi,
                 jenis,
                 nama_pemilik,
-                status_sewa,
-                nama_penyewa,
-                lama_sewa,
-                satuan_sewa,
-                harga
+                status_sewa
             });
 
             res.json(datas);
@@ -120,11 +116,11 @@ export const getDataById = async (req, res) => {
 
 //edit data
 export const editData = async (req, res) => {
-    const { kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa, nama_penyewa, lama_sewa, satuan_sewa,harga } = req.body;
+    const { kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa } = req.body;
     const { id } = req.params;
 
     try {
-        const datas = await data.update({ kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa, nama_penyewa, lama_sewa, satuan_sewa,harga }, { where: { id } });
+        const datas = await data.update({ kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa }, { where: { id } });
         res.json("data updated dengan jumlah" + datas + "data");
     } catch (error) {
         res.json({ error: error.message });
@@ -153,12 +149,7 @@ export const searchData = async (req, res) => {
                     { sisi: { [Op.like]: `%${search}%` } },
                     { jenis: { [Op.like]: `%${search}%` } },
                     { nama_pemilik: { [Op.like]: `%${search}%` } },
-                    { status_sewa: { [Op.like]: `%${search}%` } },
-                    { nama_penyewa: { [Op.like]: `%${search}%` } },
-                    { lama_sewa: { [Op.like]: `%${search}%` } },
-                    { satuan_sewa: { [Op.like]: `%${search}%` } },
-                    { harga: { [Op.like]: `%${search}%` } }
-
+                    { status_sewa: { [Op.like]: `%${search}%` } }
                 ]
             }
         });

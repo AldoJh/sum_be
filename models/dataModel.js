@@ -63,25 +63,8 @@ const data = db.define('data', {
     },
     status_sewa:{
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    nama_penyewa:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    lama_sewa:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    satuan_sewa:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    harga:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-
+        defaultValue: "available"
+    }
 }, {
     freezeTableName: true
 });
