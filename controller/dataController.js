@@ -4,6 +4,13 @@ import cookieParser from "cookie-parser";
 import {Op} from "sequelize";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+import { promisify } from "util";
+import { fileURLToPath } from 'url';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Set up multer storage engine
 const storage = multer.diskStorage({
@@ -115,17 +122,64 @@ export const getDataById = async (req, res) => {
 };
 
 //edit data
+const unlinkAsync = promisify(fs.unlink);
+// Fungsi untuk mengedit data
 export const editData = async (req, res) => {
-    const { kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa } = req.body;
     const { id } = req.params;
+    const {
+        kode_tiang, jenis_lampu, lat, long, jumlah_kendaraan, provinsi,
+        kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa
+    } = req.body;
 
     try {
-        const datas = await data.update({ kode_tiang, jenis_lampu, gambar, lat, long, jumlah_kendaraan, provinsi, kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa }, { where: { id } });
-        res.json("data updated dengan jumlah" + datas + "data");
+        // Ambil data lama
+        const dataToUpdate = await data.findByPk(id);
+        if (!dataToUpdate) {
+            return res.status(404).json({ message: `Data dengan ID: ${id} tidak ditemukan` });
+        }
+
+        // Proses upload file secara async
+        upload(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ error: err.message });
+            }
+
+            const gambarBaru = req.file ? req.file.filename : null;
+            const gambarLama = dataToUpdate.gambar;
+
+            // Update objek dengan gambar baru jika ada, jika tidak gunakan gambar lama
+            const updatedData = {
+                kode_tiang, jenis_lampu, lat, long, jumlah_kendaraan, provinsi,
+                kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa,
+                gambar: gambarBaru || gambarLama
+            };
+
+            // Update data di database
+            const [updated] = await data.update(updatedData, { where: { id } });
+
+            if (updated === 0) {
+                return res.status(400).json({ message: "Gagal mengupdate data" });
+            }
+
+            // Jika ada gambar baru, hapus gambar lama dari sistem file
+            if (gambarBaru && gambarLama) {
+                const filePath = path.join(__dirname, "../uploads/", gambarLama);
+                try {
+                    await unlinkAsync(filePath);
+                } catch (err) {
+                    console.error("Gagal menghapus gambar lama:", err.message);
+                }
+            }
+
+            res.json({ message: "Data berhasil diperbarui", updatedData });
+        });
+
     } catch (error) {
-        res.json({ error: error.message });
+        console.error("Error saat mengupdate data:", error);
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 //search data by all column
 export const searchData = async (req, res) => {

@@ -5,7 +5,7 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "email": "aldo1212@gmail.com",
+    "email": "kkiki6001@gmail.com",
     "password": "123456",
     "role" : "0"
 }
@@ -72,11 +72,7 @@ Content-Type: application/json
         "sisi": "1",
         "jenis": "billboard",
         "nama_pemilik": "PT. UVW",
-        "status_sewa": "rented",
-        "nama_penyewa": "PT. XYZ",
-        "lama_sewa": "12",
-        "satuan_sewa": "bulan",
-        "harga": "1800000"
+        "status_sewa": "rented"
     }
 
 ###
