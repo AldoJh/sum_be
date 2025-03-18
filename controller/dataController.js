@@ -217,3 +217,32 @@ export const searchData = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+// Fungsi untuk menghapus data
+export const deleteData = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const dataToDelete = await data.findByPk(id);
+
+        if (!dataToDelete) {
+            return res.status(404).json({ message: `Data dengan ID: ${id} tidak ditemukan` });
+        }
+
+        // Hapus file gambar dari sistem file
+        const filePath = path.join(__dirname, "../uploads/", dataToDelete.gambar);
+        try {
+            await unlinkAsync(filePath);
+        } catch (err) {
+            console.error("Gagal menghapus gambar:", err.message);
+        }
+
+        // Hapus data dari database
+        await data.destroy({ where: { id } });
+
+        res.json({ message: "Data berhasil dihapus" });
+    } catch (error) {
+        console.error("Error saat menghapus data:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
