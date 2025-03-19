@@ -142,25 +142,28 @@ export const getallById = async (req, res) => {
     const { id } = req.params; 
 
     try {
-        // Fetch data where jenis matches the id and status_sewa is not 'available'
+        // Ambil data yang id-nya sesuai, status_sewa tidak null, dan tidak kosong
         const datas = await data.findAll({
             where: {
-                id: id, // Filter by id
-                '$data.status_sewa$': { [Op.ne]: 'available' } // Filter out 'available' status_sewa
+                id: id, // Filter berdasarkan id
+                status_sewa: {
+                    [Op.ne]: null, // Pastikan status_sewa tidak null
+                    [Op.ne]: '' // Pastikan status_sewa tidak kosong
+                }
             },
             include: {
                 model: Sewa,
-                as: 'sewa', // Including the related Sewa model
-                required: false // Ensures data is returned even if there's no matching 'sewa'
+                as: 'sewa', // Menyertakan model Sewa yang terkait
+                required: false // Agar data tetap ditampilkan meskipun tidak ada relasi 'sewa'
             }
         });
 
-        // Check if no data is found for the given id
+        // Jika tidak ada data yang ditemukan berdasarkan id
         if (datas.length === 0) {
-            return res.status(404).json({ message: `No data found for id: ${id}` });
+            return res.status(404).json({ message: `Tidak ada data ditemukan untuk id: ${id}` });
         }
 
-        // Return the data if found
+        // Mengirimkan data yang ditemukan
         res.json(datas);
     } catch (error) {
         res.status(500).json({ error: error.message });
