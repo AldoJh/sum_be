@@ -9,6 +9,8 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cron from 'node-cron';
+import { updateSewaStatus } from './controller/dataController.js';
 
 const app = express();
 
@@ -30,6 +32,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // **Pastikan middleware CORS dipasang sebelum router**
 app.use(router);
+
+cron.schedule('0 0 * * *', async () => {
+  console.log('Memperbarui status sewa...');
+  await updateSewaStatus();
+});
 
 try {
   await db.authenticate();

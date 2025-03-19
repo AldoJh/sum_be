@@ -95,6 +95,11 @@ export const getAllDataSewa = async (req, res) => {
             include: {
                 model: Sewa,
                 as: "sewa",
+                required: false, // This ensures we still get `data` even if there’s no `sewa`
+                where: {
+                    // This condition will filter out the sewa data when the status_sewa is 'available'
+                    '$data.status_sewa$': { [Op.ne]: 'available' }
+                }
             },
         });
         res.json(tiang);
@@ -102,3 +107,4 @@ export const getAllDataSewa = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+

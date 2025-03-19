@@ -246,3 +246,51 @@ export const deleteData = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+export const updateSewaStatus = async () => {
+    try {
+      // Mendapatkan data yang sudah disewa
+      const dataSewa = await data.findAll({
+        where: {
+          status_sewa: 'rented', // Mencari data yang sedang disewa
+        },
+        include: {
+          model: Sewa,
+          required: true, // Hanya data yang memiliki sewa
+          attributes: ['id', 'id_tiang', 'lama_sewa', 'satuan_sewa', 'updatedAt'],
+        },
+      });
+  
+      // Memeriksa setiap data yang disewa
+      for (let item of dataSewa) {
+        const sewa = item.sewa[0]; // Mengambil data sewa pertama (karena hanya ada satu)
+  
+        // Menghitung tanggal akhir sewa berdasarkan lama_sewa dan satuan_sewa
+        const lamaSewa = parseInt(sewa.lama_sewa);
+        const satuanSewa = sewa.satuan_sewa;
+        let expiredDate;
+  
+        if (satuanSewa === 'bulan') {
+          expiredDate = new Date(sewa.updatedAt);
+          expiredDate.setMonth(expiredDate.getMonth() + lamaSewa); // Menambah bulan
+        } else if (satuanSewa === 'hari') {
+          expiredDate = new Date(sewa.updatedAt);
+          expiredDate.setDate(expiredDate.getDate() + lamaSewa); // Menambah hari
+        } else if (satuanSewa === 'tahun') {
+          expiredDate = new Date(sewa.updatedAt);
+          expiredDate.setFullYear(expiredDate.getFullYear() + lamaSewa); // Menambah tahun
+        }
+  
+        // Mengecek apakah tanggal sekarang lebih besar atau sama dengan tanggal berakhir
+        if (new Date() >= expiredDate) {
+          // Jika sudah habis, update status ke "available"
+          await data.update({ status_sewa: 'available' }, { where: { id: item.id } });
+          console.log(`Status sewa untuk tiang ${item.kode_tiang} telah diperbarui ke 'available'.`);
+        }
+      }
+    } catch (error) {
+      console.error('Error saat memperbarui status sewa:', error.message);
+    }
+  };
+  
