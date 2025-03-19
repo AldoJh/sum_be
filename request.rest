@@ -76,7 +76,8 @@ Content-Type: application/json
     }
 
 ###
-POST http://localhost:3000/data/search/diy
+POST http://localhost:3000/data/search/billboard
+
 
 ###
 DELETE http://localhost:3000/data/id/1

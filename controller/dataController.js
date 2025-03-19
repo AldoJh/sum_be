@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import { promisify } from "util";
 import { fileURLToPath } from 'url';
+import Sewa from "../models/sewaModel.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -181,11 +182,11 @@ export const editData = async (req, res) => {
 };
 
 
-//search data by all column
 export const searchData = async (req, res) => {
-    const { search } = req.params;
+    const { search } = req.params;  // Ambil search term dari URL params
 
     try {
+        // Pencarian data berdasarkan beberapa kolom dan mengikutkan data dari model 'Sewa'
         const datas = await data.findAll({
             where: {
                 [Op.or]: [
@@ -205,18 +206,25 @@ export const searchData = async (req, res) => {
                     { nama_pemilik: { [Op.like]: `%${search}%` } },
                     { status_sewa: { [Op.like]: `%${search}%` } }
                 ]
+            },
+            include: {
+                model: Sewa,
+                as: 'sewa',  // Menyertakan relasi dengan model 'Sewa'
+                required: false  // Memastikan data tetap muncul meski tidak ada data sewa
             }
         });
 
+        // Jika tidak ada data ditemukan berdasarkan kata kunci pencarian
         if (datas.length === 0) {
             return res.status(404).json({ message: `No data found for search: ${search}` });
         }
 
+        // Mengembalikan data yang ditemukan beserta data terkait dari model 'Sewa'
         res.json(datas);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });  // Menangani error jika terjadi
     }
-}
+};
 
 // Fungsi untuk menghapus data
 export const deleteData = async (req, res) => {
