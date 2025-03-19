@@ -80,3 +80,15 @@ POST http://localhost:3000/data/search/diy
 
 ###
 DELETE http://localhost:3000/data/id/1
+
+###
+POST http://localhost:3000/sewa
+Content-Type: application/json
+
+{
+    "id_tiang"  : "3",
+    "nama_penyewa" : "PT. XYZ",
+    "lama_sewa" : "3",
+    "satuan_sewa" : "bulan",
+    "harga_sewa" : "1000000"
+}

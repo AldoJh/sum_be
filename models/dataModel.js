@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import Sewa from "./sewaModel.js";
 
 const { DataTypes } = Sequelize;
 

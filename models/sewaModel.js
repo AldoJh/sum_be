@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import data from "./dataModel.js"
 
 const { DataTypes } = Sequelize;
 
@@ -27,5 +28,7 @@ const Sewa = db.define("sewa", {
 }, {
     freezeTableName: true
 });
+
+
 
 export default Sewa;
