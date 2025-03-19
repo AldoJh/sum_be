@@ -108,3 +108,62 @@ export const getAllDataSewa = async (req, res) => {
     }
 }
 
+export const getDataByCategory = async (req, res) => {
+    const { category } = req.params; 
+
+    try {
+        // Fetch data where jenis matches the category and status_sewa is not 'available'
+        const datas = await data.findAll({
+            where: {
+                jenis: category, // Filter by category
+                '$data.status_sewa$': { [Op.ne]: 'available' } // Filter out 'available' status_sewa
+            },
+            include: {
+                model: Sewa,
+                as: 'sewa', // Including the related Sewa model
+                required: false // Ensures data is returned even if there's no matching 'sewa'
+            }
+        });
+
+        // Check if no data is found for the given category
+        if (datas.length === 0) {
+            return res.status(404).json({ message: `No data found for category: ${category}` });
+        }
+
+        // Return the data if found
+        res.json(datas);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+export const getallById = async (req, res) => {
+    const { id } = req.params; 
+
+    try {
+        // Fetch data where jenis matches the id and status_sewa is not 'available'
+        const datas = await data.findAll({
+            where: {
+                id: id, // Filter by id
+                '$data.status_sewa$': { [Op.ne]: 'available' } // Filter out 'available' status_sewa
+            },
+            include: {
+                model: Sewa,
+                as: 'sewa', // Including the related Sewa model
+                required: false // Ensures data is returned even if there's no matching 'sewa'
+            }
+        });
+
+        // Check if no data is found for the given id
+        if (datas.length === 0) {
+            return res.status(404).json({ message: `No data found for id: ${id}` });
+        }
+
+        // Return the data if found
+        res.json(datas);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
