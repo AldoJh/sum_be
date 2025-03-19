@@ -73,3 +73,32 @@ export const updateSewa = async (req, res) => {
     }
 }
 
+//get data sewa by id
+export const getSewaById = async (req, res) => {
+    const {id} = req.params;
+
+    try{
+        const sewa = await Sewa.findOne({where:{id : id}});
+        if(!sewa){
+            return res.status(404).json({message: `No data found for id: ${id}`});
+        }
+        res.status(200).json(sewa);
+    }catch(error){
+        res.status(500).json({error:error.message});
+    }
+}
+
+// Mengambil semua data dan relasi sewa jika ada
+export const getAllDataSewa = async (req, res) => {
+    try {
+        const tiang = await data.findAll({
+            include: {
+                model: Sewa,
+                as: "sewa",
+            },
+        });
+        res.json(tiang);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

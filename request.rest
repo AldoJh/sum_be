@@ -92,3 +92,7 @@ Content-Type: application/json
     "satuan_sewa" : "bulan",
     "harga_sewa" : "1000000"
 }
+###
+GET http://localhost:3000/sewa/3
+###
+GET http://localhost:3000/all
