@@ -1,7 +1,7 @@
 import express from "express";
 import {createUser, loginUser, logoutUser} from "../controller/userController.js";
 import {createData, getAllData, editData, searchData, deleteData} from "../controller/dataController.js";
-import{addSewa, getSewabydata, getSewaById, getAllDataSewa, getDataByCategory, getallById}from "../controller/sewaController.js";
+import{addSewa, getSewabydata, getSewaById, getAllDataSewa, getDataByCategory, getallById, editSewa}from "../controller/sewaController.js";
 
 const router = express.Router();
 
@@ -22,5 +22,6 @@ router.delete('/data/id/:id', deleteData);
 router.post('/sewa', addSewa);
 router.get('/sewa/:id', getSewaById);
 router.get('/all', getAllDataSewa);
+router.put('/sewa/:id', editSewa);
 
 export default router;

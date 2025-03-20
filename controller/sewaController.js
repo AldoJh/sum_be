@@ -170,3 +170,33 @@ export const getallById = async (req, res) => {
     }
 };
 
+//edit data sewa
+export const editSewa = async (req, res) => {
+    const { id } = req.params;
+    const { nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, status_sewa } = req.body;
+
+    try {
+        // Cari data sewa berdasarkan id_tiang
+        const sewa = await Sewa.findOne({ where: { id_tiang : id } });
+
+        // Jika data sewa tidak ditemukan
+        if (!sewa) {
+            return res.status(404).json({ message: `Tidak ada data ditemukan untuk id: ${id}` });
+        }
+
+        // Update data sewa
+        const updatedSewa = await sewa.update({
+            nama_penyewa,
+            lama_sewa,
+            satuan_sewa,
+            harga_sewa
+        });
+
+        const updateData = await data.update({status_sewa: status_sewa},{where:{id : sewa.id_tiang}});
+
+        // Mengirimkan data yang telah diupdate
+        res.json(updatedSewa);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
