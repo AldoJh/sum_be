@@ -13,34 +13,25 @@ import Sewa from "../models/sewaModel.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Set up multer storage engine
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Tempat penyimpanan file
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname); // Mengambil ekstensi file
-        cb(null, Date.now() + ext); // Menggunakan timestamp sebagai nama file
-    }
-});
 
-const fileFilter = (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif/;
-    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = fileTypes.test(file.mimetype);
 
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Hanya file gambar yang diperbolehkan!'), false);
-    }
-};
+// const fileFilter = (req, file, cb) => {
+//     const fileTypes = /jpeg|jpg|png|gif/;
+//     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+//     const mimetype = fileTypes.test(file.mimetype);
 
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 6 * 1024 * 1024 } 
-}).single('gambar');
+//     if (mimetype && extname) {
+//         return cb(null, true);
+//     } else {
+//         cb(new Error('Hanya file gambar yang diperbolehkan!'), false);
+//     }
+// };
+
+// const upload = multer({
+//     storage: storage,
+//     fileFilter: fileFilter,
+//     limits: { fileSize: 6 * 1024 * 1024 } 
+// }).single('gambar');
 
 export const createData = async (req, res) => {
     upload(req, res, async (err) => {
@@ -124,6 +115,23 @@ export const getDataById = async (req, res) => {
 
 //edit data
 const unlinkAsync = promisify(fs.unlink);
+//upload gambar
+// Konfigurasi multer untuk menyimpan gambar
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/'); // Folder untuk menyimpan gambar
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname); // Menyimpan dengan ekstensi asli
+        const filename = Date.now() + ext; // Nama file unik berdasarkan timestamp
+        cb(null, filename);
+    }
+});
+
+const upload = multer({ storage: storage, limits: { fileSize: 6 * 1024 * 1024 } });
+
+// Endpoint untuk menerima gambar
+export const uploadImage = upload.single('gambar'); 
 // Fungsi untuk mengedit data
 export const editData = async (req, res) => {
     const { id } = req.params;
@@ -133,53 +141,53 @@ export const editData = async (req, res) => {
     } = req.body;
 
     try {
-        // Ambil data lama
         const dataToUpdate = await data.findByPk(id);
         if (!dataToUpdate) {
             return res.status(404).json({ message: `Data dengan ID: ${id} tidak ditemukan` });
         }
 
-        // Proses upload file secara async
-        upload(req, res, async (err) => {
-            if (err) {
-                return res.status(400).json({ error: err.message });
-            }
+        const updatedData = {
+            kode_tiang, jenis_lampu, lat, long, jumlah_kendaraan, provinsi,
+            kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa
+        };
 
-            const gambarBaru = req.file ? req.file.filename : null;
-            const gambarLama = dataToUpdate.gambar;
+        // Update data tanpa gambar
+        const [updated] = await data.update(updatedData, { where: { id } });
+        if (updated === 0) {
+            return res.status(400).json({ message: "Gagal mengupdate data" });
+        }
 
-            // Update objek dengan gambar baru jika ada, jika tidak gunakan gambar lama
-            const updatedData = {
-                kode_tiang, jenis_lampu, lat, long, jumlah_kendaraan, provinsi,
-                kabupaten, kota, nama_jalan, ukuran, sisi, jenis, nama_pemilik, status_sewa,
-                gambar: gambarBaru || gambarLama
-            };
-
-            // Update data di database
-            const [updated] = await data.update(updatedData, { where: { id } });
-
-            if (updated === 0) {
-                return res.status(400).json({ message: "Gagal mengupdate data" });
-            }
-
-            // Jika ada gambar baru, hapus gambar lama dari sistem file
-            if (gambarBaru && gambarLama) {
-                const filePath = path.join(__dirname, "../uploads/", gambarLama);
-                try {
-                    await unlinkAsync(filePath);
-                } catch (err) {
-                    console.error("Gagal menghapus gambar lama:", err.message);
-                }
-            }
-
-            res.json({ message: "Data berhasil diperbarui", updatedData });
-        });
+        res.json({ message: "Data berhasil diperbarui", updatedData });
 
     } catch (error) {
         console.error("Error saat mengupdate data:", error);
         res.status(500).json({ error: error.message });
     }
 };
+
+// Endpoint untuk memperbarui URL gambar di database
+export const updateImageUrl = async (req, res) => {
+    const { id } = req.params;
+    const { filename } = req.file;
+
+    try {
+        // Perbarui database dengan URL gambar
+        const updatedData = await data.update(
+            { gambar: filename }, // Menyimpan nama file gambar
+            { where: { id } }
+        );
+
+        if (updatedData[0] === 0) {
+            return res.status(400).json({ message: "Gagal mengupdate gambar" });
+        }
+
+        res.json({ message: "Gambar berhasil diperbarui", filename });
+    } catch (error) {
+        console.error('Error saat mengupdate gambar:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 
 export const searchData = async (req, res) => {

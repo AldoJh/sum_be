@@ -116,7 +116,10 @@ export const getDataByCategory = async (req, res) => {
         const datas = await data.findAll({
             where: {
                 jenis: category, // Filter by category
-                '$data.status_sewa$': { [Op.ne]: 'available' } // Filter out 'available' status_sewa
+                status_sewa: {
+                    [Op.ne]: null, 
+                    [Op.ne]: '' 
+                } 
             },
             include: {
                 model: Sewa,

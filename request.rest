@@ -54,7 +54,7 @@ GET http://localhost:3000/data
 GET http://localhost:3000/data/id/9
 
 ###
-PUT http://localhost:3000/data/id/1
+PUT http://localhost:3000/data/id/10
 Content-Type: application/json
 
 {
@@ -72,7 +72,7 @@ Content-Type: application/json
         "sisi": "1",
         "jenis": "billboard",
         "nama_pemilik": "PT. UVW",
-        "status_sewa": "rented"
+        "status_sewa": "available"
     }
 
 ###
