@@ -97,3 +97,6 @@ Content-Type: application/json
 GET http://localhost:3000/sewa/3
 ###
 GET http://localhost:3000/all
+
+###
+DELETE http://localhost:3000/sewa/3

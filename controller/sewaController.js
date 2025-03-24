@@ -203,3 +203,27 @@ export const editSewa = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+//hapus data sewa
+export const deleteSewa = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Cari data sewa berdasarkan id
+        const sewa = await Sewa.findOne({ where: { id_tiang:id } });
+
+        // Jika data sewa tidak ditemukan
+        if (!sewa) {
+            return res.status(404).json({ message: `Tidak ada data ditemukan untuk id: ${id}` });
+        }
+
+        // Hapus data sewa
+        await sewa.destroy();
+        await data.update({status_sewa: "available"},{where:{id : sewa.id_tiang}});
+
+        // Mengirimkan pesan bahwa data telah dihapus
+        res.json({ message: `Data berhasil dihapus` });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

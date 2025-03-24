@@ -1,7 +1,7 @@
 import express from "express";
 import {createUser, loginUser, logoutUser} from "../controller/userController.js";
 import {createData, getAllData, editData, searchData, deleteData, uploadImage} from "../controller/dataController.js";
-import{addSewa, getSewabydata, getSewaById, getAllDataSewa, getDataByCategory, getallById, editSewa}from "../controller/sewaController.js";
+import{addSewa, getSewabydata, getSewaById, getAllDataSewa, getDataByCategory, getallById, editSewa, deleteSewa}from "../controller/sewaController.js";
 
 const router = express.Router();
 
@@ -24,5 +24,6 @@ router.get('/sewa/:id', getSewaById);
 router.get('/all', getAllDataSewa);
 router.put('/sewa/:id', editSewa);
 router.post('/uploadImage', uploadImage);
+router.delete('/sewa/:id', deleteSewa);
 
 export default router;
