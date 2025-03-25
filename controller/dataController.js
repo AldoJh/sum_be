@@ -322,4 +322,23 @@ export const updateSewaStatus = async () => {
       console.error('Error saat memperbarui status sewa:', error.message);
     }
   };
+
+  export const getAll = async (req, res) => {
+    try {
+        const tiang = await data.findAll({
+            where: {
+                status_sewa: { [Op.ne]: 'available' } // Pastikan hanya data dengan status selain 'available'
+            },
+            include: {
+                model: Sewa,
+                as: "sewa",
+                required: false, // Tetap mengambil data meskipun tidak ada penyewa
+            },
+        });
+        res.json(tiang);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
   
