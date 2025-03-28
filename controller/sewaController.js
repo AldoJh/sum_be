@@ -68,13 +68,17 @@ export const updateSewa = async (req, res) => {
     const {nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai, status_sewa} = req.body;
 
     try{
-        const harga_sewa_int = parseInt(harga_sewa); // Pastikan harga_sewa dalam bentuk integer
-        const PPN = Math.ceil(harga_sewa_int * 0.11); // Hitung PPN dan bulatkan ke atas
-        const sewa_ppn = Math.ceil(harga_sewa_int + PPN); // Harga total setelah PPN
+            const harga_sewa_int = parseInt(harga_sewa); // Pastikan harga_sewa dalam bentuk integer
+            const PPN = Math.ceil(harga_sewa_int * 0.11); // Hitung PPN dan bulatkan ke atas
+            const sewa_ppn = Math.ceil(harga_sewa_int + PPN);
+            console.log(harga_sewa) // Harga total setelah PPN   
+            console.log(PPN, sewa_ppn, harga_sewa_int) // Harga total setelah PPN
+     
         const data_tiang = await data.findOne({where:{id : id_tiang}})
         if(data_tiang.status_sewa == "available"){
             return res.status(400).json({message: "Tiang belum disewa"});
         }else{
+            
             const sewa = await Sewa.update({
                 id_tiang,
                 nama_penyewa,

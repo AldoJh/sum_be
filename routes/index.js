@@ -24,7 +24,7 @@ router.delete('/data/id/:id', deleteData);
 router.post('/sewa', addSewa);
 router.get('/sewa/:id', getSewaById);
 router.get('/all', getAllDataSewa);
-router.put('/sewa/:id', updateSewa);
+router.put('/sewa/:id_tiang', updateSewa);
 router.delete('/sewa/:id', deleteSewa);
 router.get('/report', getAll);
 export default router;
