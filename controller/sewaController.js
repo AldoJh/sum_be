@@ -28,9 +28,10 @@ export const getSewabydata = async (req, res) => {
 
 //tambah data sewa jika status sewa available
 export const addSewa = async (req, res) => {
-    const {id_tiang, nama_penyewa, lama_sewa, satuan_sewa, harga_sewa} = req.body;
+    const {id_tiang, nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai} = req.body;
 
     try{
+        PPN = harga_sewa * 0.11;
         const data_tiang = await data.findOne({where:{id : id_tiang}})
         if(data_tiang.status_sewa == "available"){
             const sewa = await Sewa.create({
@@ -38,7 +39,10 @@ export const addSewa = async (req, res) => {
                 nama_penyewa,
                 lama_sewa,
                 satuan_sewa,
-                harga_sewa
+                harga_sewa,
+                tgl_mulai,
+                tgl_selesai,
+                harga_sewa_PPN: harga_sewa + PPN,
             });
             const update_tiang = await data.update({status_sewa: "rented"},{where:{id : id_tiang}});
             res.status(201).json({message: "Tiang berhasil disewa", sewa});
@@ -53,9 +57,10 @@ export const addSewa = async (req, res) => {
 //update data sewa berdasarkan id_tiang
 export const updateSewa = async (req, res) => {
     const {id_tiang} = req.params;
-    const {nama_penyewa, lama_sewa, satuan_sewa, harga_sewa} = req.body;
+    const {nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai, status_sewa} = req.body;
 
     try{
+        ppn = harga_sewa * 0.11;
         const data_tiang = await data.findOne({where:{id : id_tiang}})
         if(data_tiang.status_sewa == "available"){
             return res.status(400).json({message: "Tiang belum disewa"});
@@ -64,9 +69,13 @@ export const updateSewa = async (req, res) => {
                 nama_penyewa,
                 lama_sewa,
                 satuan_sewa,
-                harga_sewa
+                harga_sewa,
+                tgl_mulai,
+                tgl_selesai,
+                harga_sewa_PPN: harga_sewa + ppn
             },{where: {id_tiang: id_tiang}});
-            res.status(200).json(sewa);
+            const update_tiang = await data.update({status_sewa: status_sewa},{where:{id : id_tiang}});
+            res.status(200).json(sewa); 
         }
     }catch(error){
         res.status(500).json({error:error.message});

@@ -287,35 +287,20 @@ export const updateSewaStatus = async () => {
         include: {
           model: Sewa,
           required: true, // Hanya data yang memiliki sewa
-          attributes: ['id', 'id_tiang', 'lama_sewa', 'satuan_sewa', 'updatedAt'],
+          attributes: ['id', 'id_tiang', 'tgl_mulai', 'tgl_selesai'],
         },
       });
   
       // Memeriksa setiap data yang disewa
       for (let item of dataSewa) {
-        const sewa = item.sewa[0]; // Mengambil data sewa pertama (karena hanya ada satu)
+        const sewa = item?.Sewa?.[0];
   
-        // Menghitung tanggal akhir sewa berdasarkan lama_sewa dan satuan_sewa
-        const lamaSewa = parseInt(sewa.lama_sewa);
-        const satuanSewa = sewa.satuan_sewa;
-        let expiredDate;
-  
-        if (satuanSewa === 'bulan') {
-          expiredDate = new Date(sewa.updatedAt);
-          expiredDate.setMonth(expiredDate.getMonth() + lamaSewa); // Menambah bulan
-        } else if (satuanSewa === 'hari') {
-          expiredDate = new Date(sewa.updatedAt);
-          expiredDate.setDate(expiredDate.getDate() + lamaSewa); // Menambah hari
-        } else if (satuanSewa === 'tahun') {
-          expiredDate = new Date(sewa.updatedAt);
-          expiredDate.setFullYear(expiredDate.getFullYear() + lamaSewa); // Menambah tahun
-        }
-  
-        // Mengecek apakah tanggal sekarang lebih besar atau sama dengan tanggal berakhir
-        if (new Date() >= expiredDate) {
-          // Jika sudah habis, update status ke "available"
-          await data.update({ status_sewa: 'available' }, { where: { id: item.id } });
-          console.log(`Status sewa untuk tiang ${item.kode_tiang} telah diperbarui ke 'available'.`);
+        // Memeriksa apakah masa sewa telah berakhir
+        if (new Date(sewa.tgl_selesai) < new Date()) {
+          // Memperbarui status tiang menjadi 'available'
+          await data.update({ status_sewa: 'available' }, { where: { id: sewa.id_tiang } });
+          // Memperbarui status sewa menjadi 'expired'
+          await Sewa.update({ status: 'expired' }, { where: { id: sewa.id } });
         }
       }
     } catch (error) {
@@ -325,14 +310,13 @@ export const updateSewaStatus = async () => {
 
   export const getAll = async (req, res) => {
     try {
-        const tiang = await data.findAll({
+        const tiang = await sewa.findAll({
             where: {
-                status_sewa: { [Op.ne]: 'available' } // Pastikan hanya data dengan status selain 'available'
+                status_sewa: { [Op.ne]: '' } // Pastikan hanya data dengan status selain 'available'
             },
             include: {
-                model: Sewa,
-                as: "sewa",
-                required: false, // Tetap mengambil data meskipun tidak ada penyewa
+                model: data,
+                as: "data",
             },
         });
         res.json(tiang);
@@ -340,5 +324,3 @@ export const updateSewaStatus = async () => {
         res.status(500).json({ error: error.message });
     }
 };
-
-  

@@ -3,6 +3,7 @@ import db from './config/database.js';
 import User from './models/userModel.js';
 import data from './models/dataModel.js';
 import Sewa from './models/sewaModel.js';
+import ppn from './models/ppnModel.js';
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
