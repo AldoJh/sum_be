@@ -28,12 +28,16 @@ export const getSewabydata = async (req, res) => {
 
 //tambah data sewa jika status sewa available
 export const addSewa = async (req, res) => {
-    const {id_tiang, nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai} = req.body;
+    const { id_tiang, nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai } = req.body;
 
-    try{
-        PPN = harga_sewa * 0.11;
-        const data_tiang = await data.findOne({where:{id : id_tiang}})
-        if(data_tiang.status_sewa == "available"){
+    try {
+        const harga_sewa_int = parseInt(harga_sewa); // Pastikan harga_sewa dalam bentuk integer
+        const PPN = Math.ceil(harga_sewa_int * 0.11); // Hitung PPN dan bulatkan ke atas
+        const sewa_ppn = Math.ceil(harga_sewa_int + PPN); // Harga total setelah PPN
+
+        const data_tiang = await data.findOne({ where: { id: id_tiang } });
+
+        if (data_tiang.status_sewa === "available") {
             const sewa = await Sewa.create({
                 id_tiang,
                 nama_penyewa,
@@ -42,17 +46,21 @@ export const addSewa = async (req, res) => {
                 harga_sewa,
                 tgl_mulai,
                 tgl_selesai,
-                harga_sewa_PPN: harga_sewa + PPN,
+                harga_sewa_PPN: sewa_ppn.toString(), // Ubah ke string sebelum disimpan ke DB
+                status_sewa: "active",
+                PPN: PPN.toString() // Pastikan PPN juga string
             });
-            const update_tiang = await data.update({status_sewa: "rented"},{where:{id : id_tiang}});
-            res.status(201).json({message: "Tiang berhasil disewa", sewa});
-        }else{
-            res.status(400).json({message: "Tiang sudah disewa"});
+
+            await data.update({ status_sewa: "rented" }, { where: { id: id_tiang } });
+
+            res.status(201).json({ message: "Tiang berhasil disewa", sewa });
+        } else {
+            res.status(400).json({ message: "Tiang sudah disewa" });
         }
-    }catch(error){
-        res.status(500).json({error:error.message});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
 
 //update data sewa berdasarkan id_tiang
 export const updateSewa = async (req, res) => {
@@ -60,19 +68,24 @@ export const updateSewa = async (req, res) => {
     const {nama_penyewa, lama_sewa, satuan_sewa, harga_sewa, tgl_mulai, tgl_selesai, status_sewa} = req.body;
 
     try{
-        ppn = harga_sewa * 0.11;
+        const harga_sewa_int = parseInt(harga_sewa); // Pastikan harga_sewa dalam bentuk integer
+        const PPN = Math.ceil(harga_sewa_int * 0.11); // Hitung PPN dan bulatkan ke atas
+        const sewa_ppn = Math.ceil(harga_sewa_int + PPN); // Harga total setelah PPN
         const data_tiang = await data.findOne({where:{id : id_tiang}})
         if(data_tiang.status_sewa == "available"){
             return res.status(400).json({message: "Tiang belum disewa"});
         }else{
             const sewa = await Sewa.update({
+                id_tiang,
                 nama_penyewa,
                 lama_sewa,
                 satuan_sewa,
                 harga_sewa,
                 tgl_mulai,
                 tgl_selesai,
-                harga_sewa_PPN: harga_sewa + ppn
+                harga_sewa_PPN: sewa_ppn.toString(), // Ubah ke string sebelum disimpan ke DB
+                status_sewa: "active",
+                PPN: PPN.toString() // Pastikan PPN juga string
             },{where: {id_tiang: id_tiang}});
             const update_tiang = await data.update({status_sewa: status_sewa},{where:{id : id_tiang}});
             res.status(200).json(sewa); 

@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import Sewa from "../models/sewaModel.js";
 import db  from "../config/database.js";
 import { unlink } from "fs/promises";
+import models from "../models/index.js";
 
 
 
@@ -310,13 +311,13 @@ export const updateSewaStatus = async () => {
 
   export const getAll = async (req, res) => {
     try {
-        const tiang = await sewa.findAll({
+        const tiang = await models.Sewa.findAll({
             where: {
-                status_sewa: { [Op.ne]: '' } // Pastikan hanya data dengan status selain 'available'
+                status_sewa: { [Op.ne]: "" }, // Ambil hanya data dengan status selain kosong
             },
             include: {
-                model: data,
-                as: "data",
+                model: models.Data,
+                as: "datum", // Sesuai dengan alias di data.hasMany
             },
         });
         res.json(tiang);

@@ -5,9 +5,9 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "email": "aldo1212lsm@gmail.com",
+    "email": "kkiki6001@gmail.com",
     "password": "123456",
-    "role" : "1"
+    "role" : "0"
 }
 
 ###
